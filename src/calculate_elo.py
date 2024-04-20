@@ -1,5 +1,9 @@
 import os
+import math
+import pandas as pd
+import numpy as np
 from supabase import create_client
+from sklearn.linear_model import LogisticRegression
 
 
 def collect_data(client):
@@ -17,87 +21,29 @@ def collect_data(client):
         yield from response.data
 
 
-class EloRating:
-    def __init__(self, initial_rating=400, client_weight_threshold=50):
-        self.ratings = {}
-        self.initial_rating = initial_rating
-        self.client_weight_threshold = client_weight_threshold
-        self.client_counts = {}
-        self.games_played = {}
-
-    def process(self, row_iterator):
-        for row in row_iterator:
-            model_a = row["model_a"]
-            model_b = row["model_b"]
-            preference = int(row["preference"])
-            client_id = row["client_ip"]
-
-            if model_a not in self.ratings:
-                self.ratings[model_a] = self.initial_rating
-                self.games_played[model_a] = 0
-            if model_b not in self.ratings:
-                self.ratings[model_b] = self.initial_rating
-                self.games_played[model_b] = 0
-
-            if client_id not in self.client_counts:
-                self.client_counts[client_id] = 0
-            self.client_counts[client_id] += 1
-
-            if (
-                self.games_played[model_a] + self.games_played[model_b]
-                >= self.client_weight_threshold
-            ):
-                weight = 1 / (1 + self.client_counts[client_id] - 1)
-            else:
-                weight = 1
-
-            k_factor_a = self.calculate_k_factor(model_a)
-            k_factor_b = self.calculate_k_factor(model_b)
-
-            print(model_a, model_b, preference)
-            if preference == 0:
-                self.update_ratings(
-                    model_a, model_b, 1, 0, weight, k_factor_a, k_factor_b
-                )
-            elif preference == 1:
-                self.update_ratings(
-                    model_a, model_b, 0, 1, weight, k_factor_a, k_factor_b
-                )
-            else:
-                self.update_ratings(
-                    model_a, model_b, 0.5, 0.5, weight, k_factor_a, k_factor_b
-                )
-
-            self.games_played[model_a] += 1
-            self.games_played[model_b] += 1
-
-    def calculate_k_factor(self, model):
-        Ne = self.calculate_Ne(model)
-        games_played = self.games_played[model]
-        denominator = Ne + games_played
-        if denominator == 0:
-            return 8
-        return 400 / denominator
-
-    def calculate_Ne(self, model):
-        total_games = sum(self.games_played.values())
-        model_games = self.games_played[model]
-        return total_games - model_games
-
-    def update_ratings(
-        self, model_a, model_b, score_a, score_b, weight, k_factor_a, k_factor_b
-    ):
-        rating_a = self.ratings[model_a]
-        rating_b = self.ratings[model_b]
-
-        expected_a = 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
-        expected_b = 1 / (1 + 10 ** ((rating_a - rating_b) / 400))
-
-        self.ratings[model_a] += weight * k_factor_a * (score_a - expected_a)
-        self.ratings[model_b] += weight * k_factor_b * (score_b - expected_b)
-
-    def get_ratings(self):
-        return self.ratings
+# MLE computation code from Chatbot Arena LMSys paper
+def compute_mle_elo(df, SCALE=400, BASE=10, INIT_RATING=1000):
+    models = pd.concat([df["model_a"], df["model_b"]]).unique()
+    models = pd.Series(np.arange(len(models)), index=models)
+    # duplicate battles
+    df = pd.concat([df, df], ignore_index=True)
+    p = len(models.index)
+    n = df.shape[0]
+    X = np.zeros([n, p])
+    X[np.arange(n), models[df["model_a"]]] = +math.log(BASE)
+    X[np.arange(n), models[df["model_b"]]] = -math.log(BASE)
+    # one A win => two A win
+    Y = np.zeros(n)
+    Y[df["winner"] == "model_a"] = 1.0
+    # one tie => one A win + one B win
+    # find tie + tie (both bad) index
+    tie_idx = (df["winner"] == "tie") | (df["winner"] == "tie (bothbad)")
+    tie_idx[len(tie_idx) // 2 :] = False
+    Y[tie_idx] = 1.0
+    lr = LogisticRegression(fit_intercept=False, penalty=None, tol=1e-8)
+    lr.fit(X, Y)
+    elo_scores = SCALE * lr.coef_[0] + INIT_RATING
+    return pd.Series(elo_scores, index=models.index).sort_values(ascending=False)
 
 
 def main():
@@ -105,20 +51,22 @@ def main():
         os.environ.get("SUPABASE_URL"),
         os.environ.get("SUPABASE_KEY"),
     )
-
-    elo_rating = EloRating()
-    elo_rating.process(collect_data(supabase_client))
-    ratings = elo_rating.get_ratings()
-
-    for model_name, rating in ratings.items():
-        print(model_name, rating)
+    raw_data = list(collect_data(supabase_client))
+    df = pd.DataFrame(raw_data)
+    df["winner"] = df["preference"].apply(
+        lambda x: "model_a" if x == 0 else ("model_b" if x == 1 else "tie")
+    )
+    elo_scores = compute_mle_elo(df)
+    for model, elo in elo_scores.items():
         supabase_client.table("ratings").insert(
             {
-                "model_name": model_name,
-                "rating": rating,
-                "num_samples": elo_rating.games_played[model_name],
+                "model_name": model,
+                "rating": elo,
+                "num_samples": 0,
             }
         ).execute()
+
+    print(elo_scores)
 
 
 if __name__ == "__main__":
