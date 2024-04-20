@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install supabase sklearn pandas numpy
+          pip install supabase scikit-learn pandas numpy
 
       - name: Run calculations
         env:
