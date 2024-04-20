@@ -54,6 +54,7 @@ class EloRating:
             k_factor_a = self.calculate_k_factor(model_a)
             k_factor_b = self.calculate_k_factor(model_b)
 
+            print(model_a, model_b, preference)
             if preference == 0:
                 self.update_ratings(
                     model_a, model_b, 1, 0, weight, k_factor_a, k_factor_b
@@ -75,8 +76,8 @@ class EloRating:
         games_played = self.games_played[model]
         denominator = Ne + games_played
         if denominator == 0:
-            return 32
-        return 800 / denominator
+            return 8
+        return 400 / denominator
 
     def calculate_Ne(self, model):
         total_games = sum(self.games_played.values())
@@ -110,6 +111,7 @@ def main():
     ratings = elo_rating.get_ratings()
 
     for model_name, rating in ratings.items():
+        print(model_name, rating)
         supabase_client.table("ratings").insert(
             {
                 "model_name": model_name,
