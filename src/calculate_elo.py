@@ -62,7 +62,8 @@ def main():
             {
                 "model_name": model,
                 "rating": elo,
-                "num_samples": 0,
+                "num_samples": int(df["model_a"].value_counts()[model]
+                + df["model_b"].value_counts().get(model, 0)),
             }
         ).execute()
 
