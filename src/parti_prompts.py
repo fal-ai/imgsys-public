@@ -145,7 +145,34 @@ MODEL_MAP = [
         "url": "https://fal.ai/models/fooocus-extreme-speed",
         "fal": {
             "model_id": "fal-ai/fast-fooocus-sdxl",
-            "playground": "fal-ai/fast-fooocus-sdxl",
+            "playground": "https://fal.ai/models/fooocus-extreme-speed",
+        },
+    },
+    {
+        "name": "Juggernaut XL v9",
+        "type": "fal",
+        "url": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9",
+        "fal": {
+            "model_id": "fal-ai/any-sd",
+            "playground": "https://fal.ai/models/any-stable-diffusion-xl",
+            "params": {
+                "model_name": "RunDiffusion/Juggernaut-XL-v9",
+                "image_size": "square_hd",
+            },
+        },
+    },
+    {
+        "name": "Proteus",
+        "type": "fal",
+        "url": "https://huggingface.co/dataautogpt3/Proteus-RunDiffusion",
+        "fal": {
+            "model_id": "fal-ai/any-sd",
+            "playground": "https://fal.ai/models/any-stable-diffusion-xl",
+            "params": {
+                "model_name": "dataautogpt3/Proteus-RunDiffusion",
+                "image_size": "square_hd",
+                "guidance_scale": 8.5,
+            },
         },
     },
 ]
@@ -220,6 +247,7 @@ async def main():
     model_weights = [
         max_count - model_counts.get(model["name"], 0) + 1 for model in MODEL_MAP
     ]
+    print(model_weights)
 
     for _ in range(50):
         dataset = dataset.shuffle()
