@@ -162,6 +162,26 @@ MODEL_MAP = [
         },
     },
     {
+        "name": "Terminus Velocity v2",
+        "type": "fal",
+        "url": "https://huggingface.co/ptx0/terminus-xl-velocity-v2",
+        "fal": {
+            "model_id": "fal-ai/any-sd",
+            "playground": "https://fal.ai/models/any-stable-diffusion-xl",
+            "params": {
+                "model_name": "ptx0/terminus-xl-velocity-v2",
+                "image_size": "square_hd",
+                "params": {
+                    "width": 1024,
+                    "height": 1024,
+                    "guidance_scale": 11.0,
+                    "guidance_rescale": 0.5,
+                    "num_inference_steps": 35
+                }
+            },
+        },
+    },
+    {
         "name": "Proteus",
         "type": "fal",
         "url": "https://huggingface.co/dataautogpt3/Proteus-RunDiffusion",
