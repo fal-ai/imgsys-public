@@ -52,6 +52,7 @@ def main():
         os.environ.get("SUPABASE_KEY"),
     )
     raw_data = list(collect_data(supabase_client))
+
     df = pd.DataFrame(raw_data)
     df["winner"] = df["preference"].apply(
         lambda x: "model_a" if x == 0 else ("model_b" if x == 1 else "tie")
@@ -62,8 +63,10 @@ def main():
             {
                 "model_name": model,
                 "rating": elo,
-                "num_samples": int(df["model_a"].value_counts()[model]
-                + df["model_b"].value_counts().get(model, 0)),
+                "num_samples": int(
+                    df["model_a"].value_counts()[model]
+                    + df["model_b"].value_counts().get(model, 0)
+                ),
             }
         ).execute()
 

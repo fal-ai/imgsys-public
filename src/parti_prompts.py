@@ -1,3 +1,4 @@
+import time
 import os
 import datasets
 import asyncio
@@ -100,6 +101,18 @@ MODEL_MAP = [
         },
     },
     {
+        "name": "SDXL-Lightning (2 steps)",
+        "type": "fal",
+        "url": "https://huggingface.co/ByteDance/SDXL-Lightning",
+        "fal": {
+            "model_id": "fal-ai/fast-lightning-sdxl",
+            "playground": "https://fal.ai/models/stable-diffusion-xl-lightning",
+            "params": {
+                "num_inference_steps": 2,
+            },
+        },
+    },
+    {
         "name": "SDXL-Lightning (4 steps)",
         "type": "fal",
         "url": "https://huggingface.co/ByteDance/SDXL-Lightning",
@@ -120,6 +133,42 @@ MODEL_MAP = [
             "playground": "https://fal.ai/models/stable-diffusion-xl-lightning",
             "params": {
                 "num_inference_steps": 8,
+            },
+        },
+    },
+    {
+        "name": "Hyper SD - SDXL (1 steps)",
+        "type": "fal",
+        "url": "https://huggingface.co/ByteDance/Hyper-SD",
+        "fal": {
+            "model_id": "fal-ai/hyper-sdxl",
+            "playground": "https://fal.ai/models/fal-ai/hyper-sdxl",
+            "params": {
+                "num_inference_steps": 1,
+            },
+        },
+    },
+    {
+        "name": "Hyper SD - SDXL (2 steps)",
+        "type": "fal",
+        "url": "https://huggingface.co/ByteDance/Hyper-SD",
+        "fal": {
+            "model_id": "fal-ai/hyper-sdxl",
+            "playground": "https://fal.ai/models/fal-ai/hyper-sdxl",
+            "params": {
+                "num_inference_steps": 2,
+            },
+        },
+    },
+    {
+        "name": "Hyper SD - SDXL (4 steps)",
+        "type": "fal",
+        "url": "https://huggingface.co/ByteDance/Hyper-SD",
+        "fal": {
+            "model_id": "fal-ai/hyper-sdxl",
+            "playground": "https://fal.ai/models/fal-ai/hyper-sdxl",
+            "params": {
+                "num_inference_steps": 4,
             },
         },
     },
@@ -164,17 +213,191 @@ MODEL_MAP = [
     {
         "name": "Proteus",
         "type": "fal",
-        "url": "https://huggingface.co/dataautogpt3/Proteus-RunDiffusion",
+        "url": "https://huggingface.co/dataautogpt3/ProteusV0.3",
         "fal": {
             "model_id": "fal-ai/any-sd",
             "playground": "https://fal.ai/models/any-stable-diffusion-xl",
             "params": {
-                "model_name": "dataautogpt3/Proteus-RunDiffusion",
+                "model_name": "dataautogpt3/ProteusV0.3",
                 "image_size": "square_hd",
-                "guidance_scale": 8.5,
+                "num_inference_steps": 40,
+                "guidance_scale": 7.5,
             },
         },
     },
+    {
+        "name": "Kandinsky",
+        "type": "fal",
+        "url": "https://huggingface.co/kandinsky-community/kandinsky-3",
+        "fal": {
+            "model_id": "fal-ai/kandinsky3",
+            "playground": "https://fal.ai/models/kandinsky-3",
+            "params": {
+                "num_inference_steps": 35,
+            },
+        },
+    },
+    {
+        "name": "Dreamshaper v8",
+        "type": "fal",
+        "url": "https://huggingface.co/Lykon/dreamshaper-8",
+        "fal": {
+            "model_id": "fal-ai/dreamshaper",
+            "playground": "https://fal.ai/models/dreamshaper",
+            "params": {
+                "model_name": "Lykon/dreamshaper-8",
+                "num_inference_steps": 35,
+                "image_size": {
+                    "width": 768,
+                    "height": 768,
+                },
+                "guidance_scale": 7.5,
+            },
+        },
+    },
+    {
+        "name": "Dreamshaper SDXL-1-0",
+        "type": "fal",
+        "url": "https://huggingface.co/Lykon/dreamshaper-xl-1-0",
+        "fal": {
+            "model_id": "fal-ai/dreamshaper",
+            "playground": "https://fal.ai/models/dreamshaper",
+            "params": {
+                "model_name": "Lykon/dreamshaper-xl-1-0",
+                "num_inference_steps": 35,
+                "image_size": "square_hd",
+            },
+            "guidance_scale": 7.5,
+        },
+    },
+    {
+        "name": "Realistic Vision V6.0",
+        "type": "fal",
+        "url": "https://huggingface.co/SG161222/Realistic_Vision_V6.0_B1_noVAE",
+        "fal": {
+            "model_id": "fal-ai/realistic-vision",
+            "playground": "https://fal.ai/models/realistic-vision",
+            "params": {
+                "model_name": "SG161222/Realistic_Vision_V6.0_B1_noVAE",
+                "image_size": {
+                    "width": 768,
+                    "height": 768,
+                },
+                "guidance_scale": 7.5,
+                "num_inference_steps": 35,
+            },
+        },
+    },
+    {
+        "name": "RealVisXL V4.0",
+        "type": "fal",
+        "url": "https://huggingface.co/SG161222/RealVisXL_V4.0",
+        "fal": {
+            "model_id": "fal-ai/realistic-vision",
+            "playground": "https://fal.ai/models/realistic-vision",
+            "params": {
+                "model_name": "SG161222/RealVisXL_V4.0",
+                "guidance_scale": 7.5,
+                "num_inference_steps": 35,
+                "image_size": "square_hd",
+            },
+        },
+    },
+    {
+        "name": "Mobius",
+        "type": "fal",
+        "url": "https://huggingface.co/Corcelio/mobius",
+        "fal": {
+            "model_id": "fal-ai/any-sd",
+            "playground": "https://fal.ai/models/mobius",
+            "params": {
+                "scheduler": "KDPM 2A",
+                "model_name": "Corcelio/mobius",
+                "guidance_scale": 7,
+                "negative_prompt": "",
+                "num_inference_steps": 50,
+                "clip_skip": 3,
+                "image_size": "square_hd",
+            },
+        },
+    },
+    {
+        "name": "sweet-nothings-1947",
+        "type": "fal",
+        "url": "https://huggingface.co/404",
+        "fal": {
+            "model_id": "fal-ai/any-sd",
+            "playground": "https://fal.ai/models/any-stable-diffusion-xl",
+            "params": {
+                "scheduler": "Euler",
+                "model_name": "anonymous-t2i-model/sweet-nothings-1947",
+                "guidance_scale": 7,
+                "negative_prompt": "",
+                "num_inference_steps": 35,
+                "image_size": "square_hd",
+            },
+        },
+    },
+    {
+        "name": "dpo-sdxl-text2image-v1",
+        "type": "fal",
+        "url": "https://huggingface.co/mhdang/dpo-sdxl-text2image-v1",
+        "fal": {
+            "model_id": "fal-ai/any-sd",
+            "playground": "https://fal.ai/models/any-stable-diffusion-xl",
+            "params": {
+                "scheduler": "Euler",
+                "model_name": "sayakpaul/dpo-sdxl-text2image-v1-full",
+                "guidance_scale": 7,
+                "negative_prompt": "",
+                "num_inference_steps": 35,
+                "image_size": "square_hd",
+            },
+        },
+    },
+]
+
+IGNORED_WORDS = [
+    "girl",
+    "woman",
+    "princess",
+    "queen",
+    "fairy",
+    "angel",
+    "lady",
+    "child",
+    "goddess",
+    "female",
+    "nsfw",
+    "unsafe",
+    "sexy",
+    "beautiful",
+    "pretty",
+    "hot",
+    "nude",
+    "erotic",
+    "putin",
+    "war",
+    "kill",
+    "trump",
+    "biden",
+    "dead",
+    "demon",
+    "satan",
+    "god",
+    "jesus",
+    "kissing",
+    "lovers",
+    "pee",
+    "poop",
+    "vomit",
+    "blood",
+    "gore",
+    "creepy",
+    "scary",
+    "clown",
+    "joker",
+    "baby",
 ]
 
 
@@ -197,6 +420,10 @@ async def prepare_sample(prompt, supabase_client, model_weights):
     model_b = random.choice(MODEL_MAP)
     while model_a == model_b:
         model_b = random.choice(MODEL_MAP)
+
+    models = [model_a, model_b]
+    random.shuffle(models)
+    model_a, model_b = models
     async with SEMAPHORE:
         try:
             result_a, result_b = await asyncio.gather(
@@ -216,6 +443,12 @@ async def prepare_sample(prompt, supabase_client, model_weights):
         print("NSFW")
         return
 
+    image_a = result_a["images"][0]["url"]
+    image_b = result_b["images"][0]["url"]
+    if image_a.startswith("data:") or image_b.startswith("data:"):
+        print("Data URL")
+        return
+
     return {
         "prompt": prompt,
         "model_a": model_a["name"],
@@ -226,22 +459,21 @@ async def prepare_sample(prompt, supabase_client, model_weights):
 
 
 async def main():
-    dataset = datasets.load_dataset("nateraw/parti-prompts", split="train")
+    dataset = datasets.load_dataset(
+        "isidentical/moondream2-coyo-5M-captions",
+        split="train",
+    )
     supabase_client = create_client(
         os.environ.get("SUPABASE_URL"),
         os.environ.get("SUPABASE_KEY"),
     )
 
     model_counts = Counter()
-    for model in MODEL_MAP:
-        for position in ["model_a", "model_b"]:
-            count = (
-                supabase_client.table("parti_prompts")
-                .select("*", count="exact")
-                .eq(position, model["name"])
-                .execute()
-            ).count
-            model_counts[model["name"]] += count
+    result = (
+        supabase_client.table("latest_ratings").select("*", count="exact").execute()
+    )
+    for row in result.data:
+        model_counts[row["model_name"]] = row["num_samples"]
 
     max_count = max(model_counts.values())
     model_weights = [
@@ -251,20 +483,65 @@ async def main():
 
     for _ in range(50):
         dataset = dataset.shuffle()
-        futures = []
-        for prompt in dataset[:32]["Prompt"]:
-            futures.append(prepare_sample(prompt, supabase_client, model_weights))
+        futures: list[asyncio.Future] = []
+        print("starting")
+        for prompt in dataset["moondream2_caption"]:
+            if any(word in prompt.lower() for word in IGNORED_WORDS):
+                continue
+            elif len(futures) >= 48 * 4:
+                continue
+            elif len(prompt) < 3 or len(prompt) >= 220:
+                continue
+            elif prompt.startswith("http"):
+                continue
 
+            futures.append(
+                asyncio.create_task(
+                    prepare_sample(prompt.strip(), supabase_client, model_weights)
+                )
+            )
+
+        t0 = time.perf_counter()
         results = []
-        for future in asyncio.as_completed(futures):
-            sample = await future
-            if sample:
-                results.append(sample)
-                print(sample)
+        try:
+            for n, future in enumerate(asyncio.as_completed(futures, timeout=180), 1):
+                try:
+                    sample = await future
+                except Exception:
+                    import traceback
+
+                    traceback.print_exc()
+                    print("Error!!!")
+                    continue
+
+                if sample:
+                    results.append(sample)
+                    print(f"{n}/{len(futures)}", sample)
+        except asyncio.TimeoutError:
+            print("Timeout!!!")
 
         if not results:
             break
+        print("img/sec", len(results) / (time.perf_counter() - t0))
         supabase_client.table("parti_prompts").insert(results).execute()
+        print("============ CYCLE OVER ========")
+        for future in futures:
+            if future.done():
+                continue
+            future.cancel()
+
+        await asyncio.sleep(2)
+        for future in futures:
+            try:
+                await future
+            except asyncio.CancelledError:
+                pass
+            except Exception:
+                import traceback
+
+                traceback.print_exc()
+                print("Error!!!")
+                continue
 
 
 if __name__ == "__main__":
