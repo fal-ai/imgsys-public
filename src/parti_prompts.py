@@ -371,6 +371,22 @@ MODEL_MAP = [
             },
         },
     },
+    {
+        "name": "FluentlyXL v4",
+        "type": "fal",
+        "url": "https://huggingface.co/fluently/Fluently-XL-v4",
+        "fal": {
+            "model_id": "fluently/Fluently-XL-v4",
+            "playground": "https://fal.ai/models/any-stable-diffusion-xl",
+            "params": {
+                "model_name": "fluently/Fluently-XL-v4",
+                "image_size": "square_hd",
+                "guidance_scale": 5.5,
+                "num_inference_steps": 30,
+                "scheduler": "Euler A",
+            },
+        },
+    },
 ]
 
 IGNORED_WORDS = [
