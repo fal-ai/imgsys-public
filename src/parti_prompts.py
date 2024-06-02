@@ -175,6 +175,42 @@ MODEL_MAP = [
             },
         },
     },
+    {
+        "name": "Deliberate v6",
+        "type": "fal",
+        "url": "https://huggingface.co/XpucT/Deliberate",
+        "fal": {
+            "model_id": "XpucT/Deliberate",
+            "playground": "https://fal.ai/models/fal-ai/lora",
+            "params": {
+                "image_size": {
+                    "width": 512,
+                    "height": 512,
+                },
+                "num_inference_steps": 30,
+                "guidance_scale": 6,
+            },
+        },
+        
+    },
+    {
+        "name": "Reliberate v3",
+        "type": "fal",
+        "url": "https://huggingface.co/XpucT/Reliberate",
+        "fal": {
+            "model_id": "XpucT/Reliberate",
+            "playground": "https://fal.ai/models/fal-ai/lora",
+            "params": {
+                "image_size": {
+                    "width": 512,
+                    "height": 512,
+                },
+                "num_inference_steps": 30,
+                "guidance_scale": 6,
+            },
+        },
+        
+    },
 ]
 
 
