@@ -7,7 +7,7 @@ import fal_client
 from collections import Counter
 from supabase import create_client
 
-SEMAPHORE = asyncio.Semaphore(16)
+SEMAPHORE = asyncio.Semaphore(48)
 MODEL_MAP = [
     {
         "name": "Stable Diffusion XL 1.0 (Base)",
@@ -376,7 +376,7 @@ MODEL_MAP = [
         "type": "fal",
         "url": "https://huggingface.co/fluently/Fluently-XL-v4",
         "fal": {
-            "model_id": "fluently/Fluently-XL-v4",
+            "model_id": "fal-ai/any-sd",
             "playground": "https://fal.ai/models/any-stable-diffusion-xl",
             "params": {
                 "model_name": "fluently/Fluently-XL-v4",
@@ -434,20 +434,24 @@ IGNORED_WORDS = [
 
 
 async def run_model(model, prompt):
+    params = model["fal"].get("params", {})
     return await fal_client.run_async(
         model["fal"]["model_id"],
         arguments={
             "prompt": prompt,
-            **model["fal"].get("params", {}),
+            **params,
             "enable_safety_checker": True,
             "sync_mode": False,
             "format": "png",
+            "safety_checker_version": "v2",
         },
+        hint=params.get("model_name"),
     )
 
 
 async def prepare_sample(prompt, supabase_client, model_weights):
-    # Choose model_a with weight and model_b randomly, but not the same
+    # Choose model_a with weight and model_b randomly. This makes sure that the newly
+    # added models are still competing with the old/sampled models.
     (model_a,) = random.choices(MODEL_MAP, weights=model_weights, k=1)
     model_b = random.choice(MODEL_MAP)
     while model_a == model_b:
@@ -492,8 +496,10 @@ async def prepare_sample(prompt, supabase_client, model_weights):
 
 async def main():
     dataset = datasets.load_dataset(
-        "isidentical/moondream2-coyo-5M-captions",
+        "isidentical/random-stable-diffusion-prompts",
         split="train",
+        keep_in_memory=True,
+        revision="b63bf47a491dac6a8f8bfe8f949b10baff73e680",
     )
     supabase_client = create_client(
         os.environ.get("SUPABASE_URL"),
@@ -511,27 +517,19 @@ async def main():
     model_weights = [
         max_count - model_counts.get(model["name"], 0) + 1 for model in MODEL_MAP
     ]
-    print(model_weights)
 
     for _ in range(50):
+        t0 = time.perf_counter()
         dataset = dataset.shuffle()
         futures: list[asyncio.Future] = []
-        print("starting")
-        for prompt in dataset["moondream2_caption"]:
-            if any(word in prompt.lower() for word in IGNORED_WORDS):
-                continue
-            elif len(futures) >= 48 * 4:
-                continue
-            elif len(prompt) < 3 or len(prompt) >= 220:
-                continue
-            elif prompt.startswith("http"):
-                continue
-
+        for prompt in dataset[: 48 * 4]["prompt"]:
             futures.append(
                 asyncio.create_task(
                     prepare_sample(prompt.strip(), supabase_client, model_weights)
                 )
             )
+        t1 = time.perf_counter()
+        print("Time to prepare samples", t1 - t0)
 
         t0 = time.perf_counter()
         results = []
