@@ -381,8 +381,8 @@ MODEL_MAP = [
             "params": {
                 "model_name": "fluently/Fluently-XL-v4",
                 "image_size": "square_hd",
-                "guidance_scale": 5.5,
-                "num_inference_steps": 30,
+                "guidance_scale": 7,
+                "num_inference_steps": 35,
                 "scheduler": "Euler A",
             },
         },
