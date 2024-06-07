@@ -387,6 +387,22 @@ MODEL_MAP = [
             },
         },
     },
+    {
+        "name": "ColorfulXL",
+        "type": "fal",
+        "url": "https://huggingface.co/recoilme/colorfulxl",
+        "fal": {
+            "model_id": "fal-ai/any-sd",
+            "playground": "https://fal.ai/models/any-stable-diffusion-xl",
+            "params": {
+                "model_name": "recoilme/colorfulxl",
+                "image_size": "square_hd",
+                "scheduler": "Euler A",
+                "guidance_scale": 5,
+                "num_inference_steps": 34,
+            },
+        },
+    },
 ]
 
 IGNORED_WORDS = [
