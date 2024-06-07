@@ -399,6 +399,7 @@ MODEL_MAP = [
                 "image_size": "square_hd",
                 "scheduler": "Euler A",
                 "guidance_scale": 5,
+                "negative_prompt": "worst quality",
                 "num_inference_steps": 34,
             },
         },
