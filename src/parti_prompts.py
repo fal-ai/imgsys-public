@@ -399,8 +399,19 @@ MODEL_MAP = [
                 "image_size": "square_hd",
                 "scheduler": "Euler A",
                 "guidance_scale": 5,
-                "negative_prompt": "worst quality",
                 "num_inference_steps": 34,
+            },
+        },
+    },
+    {
+        "name": "Stable Diffusion 3 Medium",
+        "type": "fal",
+        "url": "https://huggingface.co/stabilityai/stable-diffusion-3-medium",
+        "fal": {
+            "model_id": "fal-ai/stable-diffusion-v3-medium",
+            "playground": "https://fal.ai/models/stable-diffusion-v3-medium",
+            "params": {
+                "num_inference_steps": 40,
             },
         },
     },
