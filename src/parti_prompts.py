@@ -174,8 +174,8 @@ MODEL_MAP = [
                 "params": {
                     "width": 1024,
                     "height": 1024,
-                    "guidance_scale": 11.0,
-                    "guidance_rescale": 0.5,
+                    "guidance_scale": 7.2,
+                    "guidance_rescale": 0.4,
                     "num_inference_steps": 35
                 }
             },
